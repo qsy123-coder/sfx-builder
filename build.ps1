@@ -38,6 +38,9 @@ $dirs = Get-ChildItem -Directory | Where-Object {
 if (@($dirs).Count -eq 0) { Write-Host "No folders." -ForegroundColor Yellow; exit 0 }
 
 foreach ($d in $dirs) {
+    # Clean ALL existing .url files in source folder (keep only the one we create)
+    Get-ChildItem $d.FullName -Recurse -Filter "*.url" -ErrorAction SilentlyContinue | Remove-Item -Force
+
     $urlFile = Join-Path $d.FullName $t4
     $urlContent = "[InternetShortcut]`r`nURL=$URL`r`n"
     [System.IO.File]::WriteAllText($urlFile, $urlContent, [System.Text.Encoding]::ASCII)
