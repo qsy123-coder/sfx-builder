@@ -38,6 +38,18 @@ $dirs = Get-ChildItem -Directory | Where-Object {
 if (@($dirs).Count -eq 0) { Write-Host "No folders." -ForegroundColor Yellow; exit 0 }
 
 foreach ($d in $dirs) {
+    # Auto-fix: if folder contains only a single subfolder with similar name, use that instead
+    $items = Get-ChildItem $d.FullName
+    $subDirs = @($items | Where-Object { $_.PSIsContainer })
+    if ($subDirs.Count -eq 1) {
+        $simpleName = $d.Name -replace 'copy$','' -replace '\s+$',''
+        $subName = $subDirs[0].Name -replace '\s+$',''
+        if ($subName -like "*$simpleName*" -or $simpleName -like "*$subName*") {
+            Write-Host "(flattened: using inner folder)" -ForegroundColor DarkGray
+            $d = $subDirs[0]
+        }
+    }
+
     # Clean ALL existing .url files in source folder (keep only the one we create)
     Get-ChildItem $d.FullName -Recurse -Filter "*.url" -ErrorAction SilentlyContinue | Remove-Item -Force
 
