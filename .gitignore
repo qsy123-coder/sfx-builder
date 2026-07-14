@@ -1,0 +1,12 @@
+# Large EXE files
+*.exe
+
+# Temp files
+_tc.txt
+_tcfg.txt
+_cfg.txt
+*.tmp
+
+# Source folders (too large)
+_7z*/
+lzma_*/
